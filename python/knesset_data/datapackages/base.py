@@ -12,9 +12,14 @@ class BaseResource(Resource):
         if not descriptor:
             descriptor = {}
         descriptor["name"] = name
-        super(BaseResource, self).__init__(descriptor, os.path.join(parent_datapackage_path, name))
+        super(BaseResource, self).__init__(descriptor,
+                                           os.path.join(parent_datapackage_path, name)
+                                           if parent_datapackage_path else None)
 
     def make(self, **kwargs):
+        raise NotImplementedError()
+
+    def fetch(self, **kwargs):
         raise NotImplementedError()
 
     def _skip_resource(self, include=None, exclude=None, **kwargs):
@@ -117,6 +122,9 @@ class CsvResource(BaseTabularResource):
                 self._append(row)
             return True
 
+    def fetch(self, **kwargs):
+        return (row for row in self._data_generator(**kwargs))
+
 
 class FilesResource(BaseResource):
 
@@ -178,6 +186,9 @@ class BaseDatapackage(DataPackage):
     @property
     def resources(self):
         return self._resources
+
+    def get_resource(self, name):
+        return [resource for resource in self.resources if resource.descriptor["name"] == name][0]
 
     def make(self, **kwargs):
         self.logger.info('making datapackage: "{}", base path: "{}"'.format(self.descriptor["name"], self.base_path))

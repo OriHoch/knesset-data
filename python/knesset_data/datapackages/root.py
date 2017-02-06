@@ -2,11 +2,12 @@ from knesset_data.datapackages.base import BaseDatapackage
 from knesset_data.dataservice.committees import CommitteesResource, CommitteeMeetingsResource, CommitteeMeetingProtocolsResource
 from knesset_data.dataservice.members import MembersResource
 from knesset_data.dataservice.laws import PrivateLawResource
+from tempfile import mkdtemp
 
 
 class RootDatapackage(BaseDatapackage):
 
-    def __init__(self, base_path):
+    def __init__(self, base_path=None):
         super(RootDatapackage, self).__init__(descriptor={
             "name": "knesset-data"
         }, default_base_path=base_path)
